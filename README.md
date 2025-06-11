@@ -158,8 +158,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 👥 Contributors
 
-- Your Name
+- Xenhusk
 
 ## 📧 Contact
 
-For questions or support, please contact: your.email@example.com
+For questions or support, please contact: desuyodavidpaul@gmail.com
