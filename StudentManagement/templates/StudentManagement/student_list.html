@@ -3,51 +3,88 @@
 
 {% block extra_head %}
 <style>
-    .pagination .page-item.active .page-link {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
     .search-container {
         position: relative;
     }
+    
     .search-container .form-control {
         padding-right: 40px;
+        background-color: var(--card-bg);
+        border-color: var(--border-color);
+        color: var(--text-color);
     }
+    
     .search-container .search-icon {
         position: absolute;
         right: 10px;
         top: 10px;
-        color: #6c757d;
+        color: var(--secondary-accent);
     }
+    
     .sort-link {
         text-decoration: none;
-        color: inherit;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
     }
+    
     .sort-link:hover {
-        text-decoration: underline;
+        color: var(--accent-color);
     }
+    
     .sort-indicator {
-        font-size: 0.8em;
+        margin-left: 5px;
+    }
+    
+    .archived-row {
+        opacity: 0.7;
+    }
+    
+    .action-buttons .btn {
+        margin: 0 2px;
+        transition: all 0.3s ease;
+    }
+    
+    .action-buttons .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .student-counter {
+        animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .custom-switch .form-check-input:checked {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+    
+    .btn-group .btn {
+        border-color: var(--border-color);
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2>Students</h2>
-            <span class="badge bg-light text-dark">Total: {{ total_count }}</span>
+    <div class="card shadow stagger-animation">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2><i class="bi bi-people-fill me-2"></i>Students</h2>
+            <span class="badge bg-primary student-counter">Total: {{ total_count }}</span>
         </div>
         
-        <div class="card-body">            <div class="row mb-3">
-                <div class="col-md-6">
-                    <div class="btn-group">
-                        <a href="{% url 'add_student' %}" class="btn btn-primary">
-                            <i class="bi bi-plus-circle"></i> Add Student
+        <div class="card-body">
+            <div class="row mb-4">                <div class="col-md-6">
+                    <div class="btn-group shadow-sm">
+                        <a href="{% url 'add_student' %}" class="btn btn-primary" data-page-link>
+                            <i class="bi bi-plus-circle-fill me-1"></i> Add Student
                         </a>
-                        <a href="{% url 'import_students' %}" class="btn btn-secondary">
-                            <i class="bi bi-upload"></i> Import
+                        <a href="{% url 'import_students' %}" class="btn btn-secondary" data-page-link>
+                            <i class="bi bi-upload me-1"></i> Import
                         </a>
                         <a href="{% url 'export_students' %}" class="btn btn-success">
                             <i class="bi bi-download"></i> Export
@@ -168,20 +205,19 @@
                                 <td>{{ student.email }}</td>
                                 <td>{{ student.age }}</td>
                                 <td>{{ student.gender }}</td>
-                                <td>{{ student.courses.all|join:", " }}</td>
-                                <td>
+                                <td>{{ student.courses.all|join:", " }}</td>                                <td>
                                     <div class="btn-group">
-                                        <a href="{% url 'student_detail' student.id %}" class="btn btn-sm btn-info" title="View">
+                                        <a href="{% url 'student_detail' student.id %}" class="btn btn-sm btn-info" title="View" data-page-link>
                                             <i class="bi bi-eye"></i>
                                         </a>
                                         {% if not student.is_archived %}
-                                        <a href="{% url 'edit_student' student.id %}" class="btn btn-sm btn-primary" title="Edit">
+                                        <a href="{% url 'edit_student' student.id %}" class="btn btn-sm btn-primary" title="Edit" data-page-link>
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="{% url 'delete_student' student.id %}" class="btn btn-sm btn-warning" title="Archive">
+                                        <a href="{% url 'delete_student' student.id %}" class="btn btn-sm btn-warning" title="Archive" data-page-link>
                                             <i class="bi bi-archive"></i>
                                         </a>                                        {% else %}
-                                        <a href="{% url 'restore_student' student.id %}" class="btn btn-sm btn-success" title="Restore">
+                                        <a href="{% url 'restore_student' student.id %}" class="btn btn-sm btn-success" title="Restore" data-page-link>
                                             <i class="bi bi-arrow-counterclockwise"></i> Restore
                                         </a>
                                         {% endif %}

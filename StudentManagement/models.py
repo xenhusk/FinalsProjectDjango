@@ -20,13 +20,20 @@ class Course(models.Model):
         db_table = "Courses"
 
 class Student(models.Model):
+    GENDER_CHOICES = [
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Other', 'Other'),
+        ('Prefer not to say', 'Prefer not to say'),
+    ]
+    
     id = models.AutoField(primary_key=True)
     id_number = models.CharField(max_length=11, unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     year_section = models.CharField(max_length=20, blank=True, null=True)
     age = models.PositiveIntegerField()
-    gender = models.CharField(max_length=10)
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
     email = models.EmailField(unique=True)
     courses = models.ManyToManyField(Course, blank=True)
     created_at = models.DateTimeField(default=timezone.now)

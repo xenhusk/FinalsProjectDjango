@@ -1,14 +1,154 @@
 {% extends "base.html" %}
 {% block title %}{{ title }}{% endblock %}
 
+{% block extra_head %}
+<style>
+    .form-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: var(--card-bg);
+    }
+    
+    .form-header {
+        background: linear-gradient(135deg, var(--accent-color) 0%, #0056b3 100%);
+        border-radius: 8px 8px 0 0;
+        padding: 1.5rem;
+    }
+    
+    .form-title {
+        margin-bottom: 0;
+        font-weight: 700;
+        color: white;
+    }
+    
+    .form-container {
+        padding: 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+        color: var(--text-color);
+    }
+    
+    .form-actions {
+        margin-top: 2rem;
+        display: flex;
+        gap: 10px;
+    }
+    
+    .form-btn {
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+    }
+      .form-check-input:checked {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+    
+    .form-check-label {
+        color: var(--text-color);
+        margin-left: 0.5rem;
+    }
+    
+    .course-selection {
+        background-color: var(--table-hover);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    .course-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .course-item:last-child {
+        border-bottom: none;
+    }
+    
+    .course-checkbox {
+        margin-right: 0.75rem;
+    }
+    
+    .course-label {
+        color: var(--text-color);
+        margin-bottom: 0;
+        cursor: pointer;
+        flex-grow: 1;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
-    <h2>{{ title }}</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">{% if edit_mode %}Update{% else %}Submit{% endif %}</button>
-        <a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
-    </form>
+    <div class="card shadow form-card stagger-animation">
+        <div class="card-header form-header">
+            <h2 class="form-title">
+                <i class="bi bi-person-plus-fill me-2"></i>{{ title }}
+            </h2>
+        </div><div class="card-body form-container">
+            <form method="post" data-no-transition>
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {% if field.errors %}
+                        <div class="alert alert-danger">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                    
+                    {% if field.name == 'courses' %}
+                        <div class="course-selection">
+                            {% for choice in field %}
+                                <div class="course-item">
+                                    <input type="checkbox" 
+                                           class="form-check-input course-checkbox" 
+                                           name="{{ field.html_name }}" 
+                                           value="{{ choice.data.value }}" 
+                                           id="{{ choice.data.attrs.id }}"
+                                           {% if choice.data.selected %}checked{% endif %}>
+                                    <label class="course-label" for="{{ choice.data.attrs.id }}">
+                                        {{ choice.data.label }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                            {% if not field.field.queryset %}
+                                <div class="text-muted text-center py-3">
+                                    <i class="bi bi-info-circle me-2"></i>No courses available
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+                    
+                    {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary form-btn">
+                        <i class="bi bi-check-circle-fill me-2"></i>{% if edit_mode %}Update{% else %}Submit{% endif %}
+                    </button>
+                    <a href="{% url 'student_list' %}" class="btn btn-secondary form-btn">
+                        <i class="bi bi-x-circle-fill me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -3,60 +3,97 @@
 
 {% block extra_head %}
 <style>
-    .pagination .page-item.active .page-link {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
     .search-container {
         position: relative;
     }
+    
     .search-container .form-control {
         padding-right: 40px;
+        background-color: var(--card-bg);
+        border-color: var(--border-color);
+        color: var(--text-color);
     }
+    
     .search-container .search-icon {
         position: absolute;
         right: 10px;
         top: 10px;
-        color: #6c757d;
+        color: var(--secondary-accent);
     }
+    
     .sort-link {
         text-decoration: none;
-        color: inherit;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
     }
+    
     .sort-link:hover {
-        text-decoration: underline;
+        color: var(--accent-color);
     }
+    
     .sort-indicator {
-        font-size: 0.8em;
+        margin-left: 5px;
     }
+    
     .description-cell {
         max-width: 300px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
+    
+    .archived-row {
+        opacity: 0.7;
+    }
+    
+    .action-buttons .btn {
+        margin: 0 2px;
+        transition: all 0.3s ease;
+    }
+    
+    .action-buttons .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .course-counter {
+        animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .custom-switch .form-check-input:checked {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+    
+    .btn-group .btn {
+        border-color: var(--border-color);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2>Courses</h2>
-            <span class="badge bg-light text-dark">Total: {{ total_count }}</span>
+    <div class="card shadow stagger-animation">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2><i class="bi bi-book-fill me-2"></i>Courses</h2>
+            <span class="badge bg-primary course-counter">Total: {{ total_count }}</span>
         </div>
         
-        <div class="card-body">            <div class="row mb-3">
-                <div class="col-md-6">
-                    <div class="btn-group">
-                        <a href="{% url 'add_course' %}" class="btn btn-primary">
-                            <i class="bi bi-plus-circle"></i> Add Course
+        <div class="card-body">
+            <div class="row mb-4">                <div class="col-md-6">
+                    <div class="btn-group shadow-sm">
+                        <a href="{% url 'add_course' %}" class="btn btn-primary" data-page-link>
+                            <i class="bi bi-plus-circle-fill me-1"></i> Add Course
                         </a>
-                        <a href="{% url 'import_courses' %}" class="btn btn-secondary">
-                            <i class="bi bi-upload"></i> Import
-                        </a>
-                        <a href="{% url 'export_courses' %}" class="btn btn-success">
-                            <i class="bi bi-download"></i> Export
+                        <a href="{% url 'import_courses' %}" class="btn btn-secondary" data-page-link>
+                            <i class="bi bi-upload me-1"></i> Import
+                        </a>                        <a href="{% url 'export_courses' %}" class="btn btn-success">
+                            <i class="bi bi-download me-1"></i> Export
                         </a>
                     </div>
                 </div>
@@ -65,7 +102,7 @@
                         <div class="input-group">
                             <input type="text" name="search" class="form-control" placeholder="Search by code, name, or description..." value="{{ search_query }}">
                             <div class="input-group-text">
-                                <div class="form-check form-switch">
+                                <div class="form-check form-switch custom-switch">
                                     <input class="form-check-input" type="checkbox" name="show_archived" id="showArchived" value="true" onChange="this.form.submit()" {% if request.GET.show_archived == 'true' %}checked{% endif %}>
                                     <label class="form-check-label" for="showArchived">Show Archived</label>
                                 </div>
@@ -163,13 +200,12 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {% for course in page_obj %}
-                            <tr {% if course.is_archived %}class="table-secondary"{% endif %}>
-                                <td>{{ course.code }}</td>
+                        <tbody>                            {% for course in page_obj %}
+                            <tr {% if course.is_archived %}class="table-secondary archived-row"{% endif %}>
+                                <td><span class="badge bg-light me-2">{{ course.code }}</span></td>
                                 <td>{{ course.name }}</td>
                                 <td class="description-cell" title="{{ course.description }}">{{ course.description|default:"No description" }}</td>
-                                <td>{{ course.credits }}</td>
+                                <td><span class="badge bg-info">{{ course.credits }} credits</span></td>
                                 <td>
                                     {% if course.is_active %}
                                         <span class="badge bg-success">Active</span>
@@ -181,23 +217,23 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <span class="badge bg-info">{{ course.enrollment_count }} students</span>
+                                    <span class="badge bg-secondary">{{ course.enrollment_count }} students</span>
                                 </td>
-                                <td>{{ course.created_at|date:"M d, Y" }}</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <a href="{% url 'course_detail' course.id %}" class="btn btn-sm btn-info" title="View">
+                                <td>{{ course.created_at|date:"M d, Y" }}</td>                                <td>
+                                    <div class="btn-group action-buttons">
+                                        <a href="{% url 'course_detail' course.id %}" class="btn btn-sm btn-info" title="View" data-bs-toggle="tooltip" data-page-link>
                                             <i class="bi bi-eye"></i>
                                         </a>
                                         {% if not course.is_archived %}
-                                        <a href="{% url 'edit_course' course.id %}" class="btn btn-sm btn-primary" title="Edit">
+                                        <a href="{% url 'edit_course' course.id %}" class="btn btn-sm btn-primary" title="Edit" data-bs-toggle="tooltip" data-page-link>
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="{% url 'delete_course' course.id %}" class="btn btn-sm btn-warning" title="Archive">
+                                        <a href="{% url 'delete_course' course.id %}" class="btn btn-sm btn-warning" title="Archive" data-bs-toggle="tooltip" data-page-link>
                                             <i class="bi bi-archive"></i>
-                                        </a>                                        {% else %}
-                                        <a href="{% url 'restore_course' course.id %}" class="btn btn-sm btn-success" title="Restore">
-                                            <i class="bi bi-arrow-counterclockwise"></i> Restore
+                                        </a>
+                                        {% else %}
+                                        <a href="{% url 'restore_course' course.id %}" class="btn btn-sm btn-success" title="Restore" data-bs-toggle="tooltip" data-page-link>
+                                            <i class="bi bi-arrow-counterclockwise"></i>
                                         </a>
                                         {% endif %}
                                     </div>

@@ -4,32 +4,123 @@
 {% block extra_head %}
 <style>
     .stats-card {
-        transition: transform 0.3s ease;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        border-radius: 10px;
     }
+    
     .stats-card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     }
+    
     .stats-icon {
         font-size: 2.5rem;
-        opacity: 0.7;
+        opacity: 0.8;
     }
-    .chart-container {
+      .chart-container {
         position: relative;
         height: 300px;
+        margin-bottom: 20px;
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 15px;
+        border: 1px solid var(--border-color);
     }
+    
     .recent-activity {
         max-height: 400px;
         overflow-y: auto;
+        border-radius: 8px;
+    }
+    
+    .custom-switch .form-check-input:checked {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+    
+    .custom-switch .form-check-label {
+        color: var(--text-color);
+    }
+    
+    .stats-primary {
+        background: linear-gradient(45deg, var(--btn-primary), #1e7e34);
+    }
+    
+    .stats-success {
+        background: linear-gradient(45deg, var(--btn-success), #0f5132);
+    }
+    
+    .stats-info {
+        background: linear-gradient(45deg, var(--btn-info), #055160);
+    }
+    
+    .stats-warning {
+        background: linear-gradient(45deg, var(--btn-warning), #664d03);
+    }
+    
+    .stats-number {
+        font-weight: 700;
+        font-size: 2.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stats-label {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+    }
+    
+    .activity-item {
+        border-left: 4px solid var(--accent-color);
+        padding: 10px 15px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        background-color: var(--card-bg);
+        transition: all 0.3s ease;
+    }
+    
+    .activity-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }    
+    [data-bs-theme="dark"] .chart-container canvas {
+        filter: brightness(0.9) contrast(1.1);
+    }
+    
+    /* Enhanced card header styling */
+    .card-header.bg-light {
+        background-color: var(--table-hover) !important;
+        color: var(--text-color) !important;
+        border-bottom-color: var(--border-color) !important;
+    }
+    
+    /* List group styling for dark mode */
+    .list-group-item {
+        background-color: var(--card-bg);
+        border-color: var(--border-color);
+        color: var(--text-color);
+    }
+    
+    .list-group-item:hover {
+        background-color: var(--table-hover);
+    }
+    
+    /* Chart.js legend text color for dark mode */
+    [data-bs-theme="dark"] .chart-container {
+        color: var(--text-color);
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <div class="card shadow">        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2><i class="bi bi-graph-up"></i> Reports & Statistics</h2>
+    <div class="card shadow">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2><i class="bi bi-graph-up-arrow me-2"></i>Reports & Statistics</h2>
             <form method="get" class="d-flex align-items-center">
-                <div class="form-check form-switch text-light me-2">
+                <div class="form-check form-switch custom-switch me-2">
                     <input class="form-check-input" type="checkbox" name="include_archived" id="includeArchived" value="true" onChange="this.form.submit()" {% if include_archived %}checked{% endif %}>
                     <label class="form-check-label" for="includeArchived">Include Archived Items</label>
                 </div>
@@ -204,11 +295,23 @@
 {% block extra_scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Get current theme for chart styling
+    const isDarkMode = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+    const textColor = isDarkMode ? '#f0f6fc' : '#212529';
+    const gridColor = isDarkMode ? '#30363d' : '#dee2e6';
+    
+    // Chart.js default configuration for all charts
+    Chart.defaults.color = textColor;
+    Chart.defaults.borderColor = gridColor;
+    Chart.defaults.backgroundColor = 'rgba(88, 166, 255, 0.8)';
+    
     // Gender Distribution Chart
     const genderData = {{ gender_distribution|safe }};
     const genderLabels = genderData.map(item => item.gender || 'Not Specified');
     const genderCounts = genderData.map(item => item.count);
-    const genderColors = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'];
+    const genderColors = isDarkMode ? 
+        ['#58a6ff', '#238636', '#0969da', '#d29922', '#da3633'] :
+        ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'];
     
     new Chart(document.getElementById('genderChart'), {
         type: 'pie',
@@ -217,20 +320,25 @@ document.addEventListener('DOMContentLoaded', function() {
             datasets: [{
                 data: genderCounts,
                 backgroundColor: genderColors,
-                hoverBackgroundColor: genderColors,
-                hoverBorderColor: "rgba(234, 236, 244, 1)",
+                hoverBackgroundColor: genderColors.map(color => color + 'CC'),
+                hoverBorderColor: textColor,
+                borderWidth: 2,
+                borderColor: isDarkMode ? '#0d1117' : '#fff'
             }]
         },
         options: {
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    position: 'bottom',
+                    labels: {
+                        color: textColor,
+                        padding: 20
+                    }
                 }
             }
         }
-    });
-    
+    });    
     // Year/Section Distribution Chart
     const yearSectionData = {{ year_section_distribution|safe }};
     const yearSectionLabels = yearSectionData.map(item => item.year_section || 'Not Specified');
@@ -243,10 +351,10 @@ document.addEventListener('DOMContentLoaded', function() {
             datasets: [{
                 label: 'Number of Students',
                 data: yearSectionCounts,
-                backgroundColor: '#4e73df',
-                hoverBackgroundColor: '#2e59d9',
-                borderColor: '#4e73df',
-                hoverBorderColor: '#2e59d9',
+                backgroundColor: isDarkMode ? '#58a6ff' : '#4e73df',
+                hoverBackgroundColor: isDarkMode ? '#4dabf7' : '#2e59d9',
+                borderColor: isDarkMode ? '#58a6ff' : '#4e73df',
+                hoverBorderColor: isDarkMode ? '#4dabf7' : '#2e59d9',
                 borderWidth: 1
             }]
         },
@@ -256,13 +364,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        precision: 0
+                        precision: 0,
+                        color: textColor
+                    },
+                    grid: {
+                        color: gridColor
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: textColor
+                    },
+                    grid: {
+                        color: gridColor
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: textColor
                     }
                 }
             }
         }
-    });
-      // Course Enrollment Chart
+    });      // Course Enrollment Chart
     const courseStats = [
         {% for course in course_stats %}
             {
@@ -279,10 +405,10 @@ document.addEventListener('DOMContentLoaded', function() {
             datasets: [{
                 label: 'Number of Students',
                 data: courseStats.map(item => item.count),
-                backgroundColor: '#1cc88a',
-                hoverBackgroundColor: '#17a673',
-                borderColor: '#1cc88a',
-                hoverBorderColor: '#17a673',
+                backgroundColor: isDarkMode ? '#238636' : '#1cc88a',
+                hoverBackgroundColor: isDarkMode ? '#2ea043' : '#17a673',
+                borderColor: isDarkMode ? '#238636' : '#1cc88a',
+                hoverBorderColor: isDarkMode ? '#2ea043' : '#17a673',
                 borderWidth: 1
             }]
         },
@@ -293,13 +419,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 x: {
                     beginAtZero: true,
                     ticks: {
-                        precision: 0
+                        precision: 0,
+                        color: textColor
+                    },
+                    grid: {
+                        color: gridColor
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: textColor
+                    },
+                    grid: {
+                        color: gridColor
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: textColor
                     }
                 }
             }
         }
-    });
-    
+    });    
     // Students by Number of Courses Chart
     const studentCourseData = {{ student_course_counts|safe }};
     const courseCounts = studentCourseData.map(item => item.count);
@@ -312,10 +456,10 @@ document.addEventListener('DOMContentLoaded', function() {
             datasets: [{
                 label: 'Number of Students',
                 data: studentCounts,
-                backgroundColor: '#36b9cc',
-                hoverBackgroundColor: '#2c9faf',
-                borderColor: '#36b9cc',
-                hoverBorderColor: '#2c9faf',
+                backgroundColor: isDarkMode ? '#0969da' : '#36b9cc',
+                hoverBackgroundColor: isDarkMode ? '#1f6feb' : '#2c9faf',
+                borderColor: isDarkMode ? '#0969da' : '#36b9cc',
+                hoverBorderColor: isDarkMode ? '#1f6feb' : '#2c9faf',
                 borderWidth: 1
             }]
         },
@@ -325,12 +469,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        precision: 0
+                        precision: 0,
+                        color: textColor
+                    },
+                    grid: {
+                        color: gridColor
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: textColor
+                    },
+                    grid: {
+                        color: gridColor
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: textColor
                     }
                 }
             }
         }
     });
+    
+    // Listen for theme changes and update charts
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('change', function() {
+            // Reload the page to update chart colors
+            setTimeout(() => {
+                window.location.reload();
+            }, 300);
+        });
+    }
 });
 </script>
 {% endblock %}

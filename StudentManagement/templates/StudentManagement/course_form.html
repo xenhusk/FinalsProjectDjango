@@ -1,14 +1,99 @@
 {% extends "base.html" %}
 {% block title %}{{ title }}{% endblock %}
 
+{% block extra_head %}
+<style>
+    .form-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: var(--card-bg);
+    }
+    
+    .form-header {
+        background: linear-gradient(135deg, var(--accent-color) 0%, #0056b3 100%);
+        border-radius: 8px 8px 0 0;
+        padding: 1.5rem;
+    }
+    
+    .form-title {
+        margin-bottom: 0;
+        font-weight: 700;
+        color: white;
+    }
+    
+    .form-container {
+        padding: 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+        color: var(--text-color);
+    }
+    
+    .form-actions {
+        margin-top: 2rem;
+        display: flex;
+        gap: 10px;
+    }
+    
+    .form-btn {
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+    }
+    
+    .form-check-input:checked {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+    
+    .form-check-label {
+        color: var(--text-color);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
-    <h2>{{ title }}</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">{% if edit_mode %}Update{% else %}Submit{% endif %}</button>
-        <a href="{% url 'course_list' %}" class="btn btn-secondary">Cancel</a>
-    </form>
+    <div class="card shadow form-card stagger-animation">
+        <div class="card-header form-header">
+            <h2 class="form-title">
+                <i class="bi bi-book-half me-2"></i>{{ title }}
+            </h2>
+        </div>
+        <div class="card-body form-container">
+            <form method="post" data-no-transition>
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {% if field.errors %}
+                        <div class="alert alert-danger">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                    {{ field }}
+                    {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary form-btn">
+                        <i class="bi bi-check-circle-fill me-2"></i>{% if edit_mode %}Update{% else %}Submit{% endif %}
+                    </button>
+                    <a href="{% url 'course_list' %}" class="btn btn-secondary form-btn">
+                        <i class="bi bi-x-circle-fill me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

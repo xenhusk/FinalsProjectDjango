@@ -1,21 +1,669 @@
 {% extends "base.html" %}
 {% block title %}Student Management{% endblock %}
 
+{% block extra_head %}
+<style>
+    /* Hero Section Styling */
+    .hero-section {
+        background: linear-gradient(135deg, var(--accent-color) 0%, var(--btn-primary) 100%);
+        color: white;
+        padding: 4rem 0;
+        position: relative;
+        overflow: hidden;
+        margin: -1.5rem -15px 0 -15px;
+        border-radius: 0 0 30px 30px;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="white" stop-opacity="0.1"/><stop offset="100%" stop-color="white" stop-opacity="0"/></radialGradient></defs><rect width="100" height="20" fill="url(%23a)"/></svg>');
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+    }
+    
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        animation: slideInFromTop 1s ease-out;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        opacity: 0.95;
+        font-weight: 300;
+        animation: slideInFromBottom 1s ease-out 0.3s both;
+    }
+    
+    .hero-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+    
+    /* Statistics Cards */
+    .stats-section {
+        margin: 3rem 0;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border: none;
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    .stat-card:nth-child(1) { animation-delay: 0.1s; }
+    .stat-card:nth-child(2) { animation-delay: 0.2s; }
+    .stat-card:nth-child(3) { animation-delay: 0.3s; }
+    .stat-card:nth-child(4) { animation-delay: 0.4s; }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.5s;
+    }
+    
+    .stat-card:hover::before {
+        left: 100%;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-10px) scale(1.05);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .stat-label {
+        font-size: 1rem;
+        color: var(--text-color);
+        opacity: 0.8;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+    
+    .stat-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+    }
+    
+    /* Menu Cards */
+    .menu-section {
+        margin: 4rem 0;
+    }
+    
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .menu-card {
+        background: var(--card-bg);
+        border: none;
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        animation: zoomIn 0.6s ease-out;
+    }
+    
+    .menu-card:nth-child(1) { animation-delay: 0.1s; }
+    .menu-card:nth-child(2) { animation-delay: 0.2s; }
+    .menu-card:nth-child(3) { animation-delay: 0.3s; }
+    .menu-card:nth-child(4) { animation-delay: 0.4s; }
+    
+    .menu-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(45deg, var(--accent-color), var(--btn-primary));
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .menu-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .menu-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    }
+    
+    .menu-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(45deg, var(--accent-color), var(--btn-primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .menu-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-color);
+    }
+    
+    .menu-description {
+        font-size: 0.95rem;
+        color: var(--text-color);
+        opacity: 0.7;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+    
+    .menu-btn {
+        background: linear-gradient(45deg, var(--accent-color), var(--btn-primary));
+        border: none;
+        color: white;
+        padding: 0.8rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .menu-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+        transition: left 0.5s;
+    }
+    
+    .menu-btn:hover::before {
+        left: 100%;
+    }
+    
+    .menu-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+    
+    /* Floating particles animation */
+    .particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+    }
+    
+    .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        animation: float-particle 8s linear infinite;
+    }
+    
+    /* Animations */
+    @keyframes slideInFromTop {
+        0% {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes slideInFromBottom {
+        0% {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes zoomIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+        }
+        40% {
+            transform: translateY(-10px);
+        }
+        60% {
+            transform: translateY(-5px);
+        }
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+    
+    @keyframes float-particle {
+        0% {
+            transform: translateY(100vh) rotate(0deg);
+            opacity: 0;
+        }
+        10% {
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-100px) rotate(360deg);
+            opacity: 0;
+        }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+        
+        .menu-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .stats-section .row {
+            --bs-gutter-x: 1rem;
+        }
+    }
+    
+    /* Dark mode specific adjustments */
+    [data-bs-theme="dark"] .hero-section {
+        background: linear-gradient(135deg, var(--accent-color) 0%, #0f3460 100%);
+    }
+    
+    [data-bs-theme="dark"] .stat-card {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    [data-bs-theme="dark"] .menu-card {
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+    
+    [data-bs-theme="dark"] .menu-card:hover {
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Student Management System</h1>
-    <div class="row">
-        <div class="col-md-6 offset-md-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Main Menu</h5>
-                    <div class="d-grid gap-3">
-                        <a href="{% url 'student_list' %}" class="btn btn-primary">Manage Students</a>
-                        <a href="{% url 'course_list' %}" class="btn btn-secondary">Manage Courses</a>
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="particles">
+        <!-- Animated particles will be added via JavaScript -->
+    </div>
+    <div class="container hero-content">
+        <div class="hero-icon">
+            <i class="bi bi-mortarboard-fill"></i>
+        </div>
+        <h1 class="hero-title">Student Management System</h1>
+        <p class="hero-subtitle">Efficiently manage your educational institution with our comprehensive and intuitive platform</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Statistics Section -->
+    <div class="stats-section">
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <i class="bi bi-people-fill stat-icon"></i>
+                    <span class="stat-number" id="student-count">{{ total_students|default:0 }}</span>
+                    <div class="stat-label">Total Students</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <i class="bi bi-book-fill stat-icon"></i>
+                    <span class="stat-number" id="course-count">{{ total_courses|default:0 }}</span>
+                    <div class="stat-label">Active Courses</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <i class="bi bi-person-check-fill stat-icon"></i>
+                    <span class="stat-number" id="active-students">{{ active_students|default:0 }}</span>
+                    <div class="stat-label">Active Students</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <i class="bi bi-graph-up-arrow stat-icon"></i>
+                    <span class="stat-number" id="enrollment-rate">{{ enrollment_rate|default:0 }}%</span>
+                    <div class="stat-label">Enrollment Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Section -->
+    <div class="menu-section">
+        <div class="text-center mb-5">
+            <h2 class="display-6 fw-bold" style="color: var(--text-color);">Quick Actions</h2>
+            <p style="color: var(--text-color); opacity: 0.8;">Choose an action to get started</p>
+        </div>
+        
+        <div class="menu-grid">
+            <div class="menu-card">
+                <div class="menu-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <h3 class="menu-title">Manage Students</h3>
+                <p class="menu-description">Add, edit, view, and manage student records. Track student information and enrollment status.</p>
+                <a href="{% url 'student_list' %}" class="menu-btn">
+                    <i class="bi bi-arrow-right me-2"></i>View Students
+                </a>
+            </div>
+            
+            <div class="menu-card">
+                <div class="menu-icon">
+                    <i class="bi bi-book-fill"></i>
+                </div>
+                <h3 class="menu-title">Manage Courses</h3>
+                <p class="menu-description">Create and manage course offerings. Set course details, credits, and track course enrollment.</p>
+                <a href="{% url 'course_list' %}" class="menu-btn">
+                    <i class="bi bi-arrow-right me-2"></i>View Courses
+                </a>
+            </div>
+            
+            <div class="menu-card">
+                <div class="menu-icon">
+                    <i class="bi bi-bar-chart-fill"></i>
+                </div>
+                <h3 class="menu-title">Reports & Analytics</h3>
+                <p class="menu-description">Generate comprehensive reports and view analytics about students, courses, and enrollment trends.</p>
+                <a href="{% url 'reports' %}" class="menu-btn">
+                    <i class="bi bi-arrow-right me-2"></i>View Reports
+                </a>
+            </div>
+            
+            <div class="menu-card">
+                <div class="menu-icon">
+                    <i class="bi bi-cloud-upload-fill"></i>
+                </div>
+                <h3 class="menu-title">Import Data</h3>
+                <p class="menu-description">Bulk import student and course data using CSV files. Quick and efficient data management.</p>
+                <a href="{% url 'import_students' %}" class="menu-btn">
+                    <i class="bi bi-arrow-right me-2"></i>Import Data
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Summary -->
+    <div class="row mt-5 mb-4">
+        <div class="col-12">
+            <div class="card" style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 15px;">
+                <div class="card-body text-center py-4">
+                    <h4 style="color: var(--text-color); margin-bottom: 1rem;">
+                        <i class="bi bi-speedometer2 me-2" style="color: var(--accent-color);"></i>
+                        System Overview
+                    </h4>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div style="color: var(--accent-color); font-size: 1.1rem; font-weight: 600;">
+                                Latest Activity
+                            </div>
+                            <div style="color: var(--text-color); opacity: 0.8;">
+                                {{ latest_activity|default:"No recent activity" }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div style="color: var(--accent-color); font-size: 1.1rem; font-weight: 600;">
+                                System Status
+                            </div>
+                            <div style="color: var(--btn-success);">
+                                <i class="bi bi-check-circle-fill me-1"></i>All Systems Operational
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div style="color: var(--accent-color); font-size: 1.1rem; font-weight: 600;">
+                                Last Updated
+                            </div>
+                            <div style="color: var(--text-color); opacity: 0.8;">
+                                {% now "M d, Y - H:i" %}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate numbers counting up
+    function animateNumbers() {
+        const numbers = document.querySelectorAll('.stat-number');
+        numbers.forEach(number => {
+            const target = parseInt(number.textContent.replace('%', ''));
+            const isPercentage = number.textContent.includes('%');
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                number.textContent = Math.floor(current) + (isPercentage ? '%' : '');
+            }, 50);
+        });
+    }
+
+    // Create floating particles
+    function createParticles() {
+        const particlesContainer = document.querySelector('.particles');
+        const particleCount = 20;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 8 + 's';
+            particle.style.animationDuration = (Math.random() * 3 + 5) + 's';
+            particlesContainer.appendChild(particle);
+        }
+    }
+
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationPlayState = 'running';
+                if (entry.target.classList.contains('stat-card')) {
+                    // Trigger number animation when stats come into view
+                    setTimeout(animateNumbers, 300);
+                }
+            }
+        });
+    }, observerOptions);
+
+    // Observe all animated elements
+    document.querySelectorAll('.stat-card, .menu-card').forEach(el => {
+        el.style.animationPlayState = 'paused';
+        observer.observe(el);
+    });
+
+    // Create particles
+    createParticles();
+
+    // Add parallax effect to hero section
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const heroSection = document.querySelector('.hero-section');
+        if (heroSection) {
+            heroSection.style.transform = `translateY(${scrolled * 0.5}px)`;
+        }
+    });
+
+    // Add hover sound effects (optional - you can remove if not needed)
+    const menuCards = document.querySelectorAll('.menu-card');
+    menuCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-15px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+
+    // Add ripple effect to buttons
+    const buttons = document.querySelectorAll('.menu-btn');
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+            `;
+            
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+
+    // Add CSS for ripple animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Initialize number animation on page load
+    setTimeout(animateNumbers, 1000);
+});
+</script>
 {% endblock %}

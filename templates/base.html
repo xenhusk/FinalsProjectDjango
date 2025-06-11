@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Base Title{% endblock %}</title>
-    <style>
+    <title>{% block title %}Base Title{% endblock %}</title>    <style>
         :root {
             /* Light mode colors */
             --bg-color: #f8f9fa;
@@ -15,6 +14,36 @@
             --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
             --accent-color: #0d6efd;
             --secondary-accent: #6c757d;
+            --navbar-bg: #0d6efd;
+            --navbar-color: #fff;
+            --table-hover: #f0f0f0;
+            --border-color: #dee2e6;
+            --btn-primary: #0d6efd;
+            --btn-secondary: #6c757d;
+            --btn-success: #198754;
+            --btn-warning: #ffc107;
+            --btn-danger: #dc3545;
+            --btn-info: #0dcaf0;
+        }
+          [data-bs-theme="dark"] {
+            --bg-color: #0d1117;
+            --text-color: #f0f6fc;
+            --card-bg: #161b22;
+            --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            --accent-color: #58a6ff;
+            --secondary-accent: #8b949e;
+            --navbar-bg: #161b22;
+            --navbar-color: #f0f6fc;
+            --table-hover: #21262d;
+            --border-color: #30363d;
+            --btn-primary: #238636;
+            --btn-secondary: #21262d;
+            --btn-success: #238636;
+            --btn-warning: #d29922;
+            --btn-danger: #da3633;
+            --btn-info: #0969da;
+            --btn-light: #f0f6fc;
+            --btn-dark: #21262d;
         }
         
         body {
@@ -25,6 +54,82 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
             padding-top: 60px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Theme toggle switch styling */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            margin-left: 15px;
+        }
+        
+        .theme-switch {
+            display: inline-block;
+            position: relative;
+            width: 60px;
+            height: 28px;
+        }
+        
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--accent-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(32px);
+        }
+        
+        .theme-icon {
+            margin-left: 10px;
+            font-size: 1.2rem;
+            color: var(--navbar-color);
+        }
+        
+        /* Table styles */
+        .table {
+            border-color: var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .table th {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        
+        .table td {
+            border-color: var(--border-color);
         }
         
         .table th.sortable {
@@ -32,11 +137,34 @@
         }
         
         .table th.sortable:hover {
-            background-color: #f0f0f0;
+            background-color: var(--table-hover);
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: var(--table-hover);
         }
         
         .sort-indicator {
             margin-left: 5px;
+        }
+        
+        /* Card styles */
+        .card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-header {
+            background-color: var(--card-bg);
+            border-bottom-color: var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .card-body {
+            background-color: var(--card-bg);
+            color: var(--text-color);
         }
         
         .stats-card {
@@ -45,15 +173,562 @@
         
         .stats-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Custom navbar */
+        .navbar-custom {
+            background-color: var(--navbar-bg) !important;
+        }
+        
+        .navbar-custom .navbar-brand,
+        .navbar-custom .nav-link {
+            color: var(--navbar-color) !important;
+        }
+        
+        .navbar-custom .nav-link:hover {
+            color: rgba(var(--navbar-color), 0.8) !important;
+        }
+        
+        /* Form controls */
+        .form-control, .form-select {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.25rem rgba(74, 146, 255, 0.25);
+        }
+          /* Button styling */
+        .btn-primary {
+            background-color: var(--btn-primary);
+            border-color: var(--btn-primary);
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2ea043;
+            border-color: #2ea043;
+            color: #fff;
+        }
+        
+        .btn-secondary {
+            background-color: var(--btn-secondary);
+            border-color: var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--table-hover);
+            border-color: var(--accent-color);
+            color: var(--text-color);
+        }
+        
+        .btn-success {
+            background-color: var(--btn-success);
+            border-color: var(--btn-success);
+            color: #fff;
+        }
+        
+        .btn-success:hover {
+            background-color: #2ea043;
+            border-color: #2ea043;
+            color: #fff;
+        }
+        
+        .btn-warning {
+            background-color: var(--btn-warning);
+            border-color: var(--btn-warning);
+            color: #000;
+        }
+        
+        .btn-warning:hover {
+            background-color: #bf8700;
+            border-color: #bf8700;
+            color: #000;
+        }
+        
+        .btn-danger {
+            background-color: var(--btn-danger);
+            border-color: var(--btn-danger);
+            color: #fff;
+        }
+        
+        .btn-danger:hover {
+            background-color: #b61f1c;
+            border-color: #b61f1c;
+            color: #fff;
+        }
+        
+        .btn-info {
+            background-color: var(--btn-info);
+            border-color: var(--btn-info);
+            color: #fff;
+        }
+        
+        .btn-info:hover {
+            background-color: #0550ae;
+            border-color: #0550ae;
+            color: #fff;
+        }
+        
+        .btn-light {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .btn-light:hover {
+            background-color: var(--table-hover);
+            border-color: var(--accent-color);
+            color: var(--text-color);
+        }
+        
+        .btn-dark {
+            background-color: var(--btn-dark);
+            border-color: var(--btn-dark);
+            color: var(--text-color);
+        }
+        
+        .btn-outline-primary {
+            color: var(--btn-primary);
+            border-color: var(--btn-primary);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--btn-primary);
+            border-color: var(--btn-primary);
+            color: #fff;
+        }
+        
+        .btn-outline-secondary {
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        
+        .btn-outline-secondary:hover {
+            background-color: var(--table-hover);
+            border-color: var(--accent-color);
+            color: var(--text-color);
+        }
+        
+        .btn-outline-danger {
+            color: var(--btn-danger);
+            border-color: var(--btn-danger);
+        }
+        
+        .btn-outline-danger:hover {
+            background-color: var(--btn-danger);
+            border-color: var(--btn-danger);
+            color: #fff;
+        }
+        
+        /* Alert styling */
+        .alert {
+            border-color: var(--border-color);
+        }
+        
+        /* Pagination */
+        .pagination .page-link {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .pagination .page-link:hover {
+            background-color: var(--table-hover);
+            border-color: var(--accent-color);
+            color: var(--text-color);
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+          /* Badge styling */
+        .badge {
+            color: #fff;
+        }
+        
+        .badge.bg-primary {
+            background-color: var(--btn-primary) !important;
+        }
+        
+        .badge.bg-secondary {
+            background-color: var(--btn-secondary) !important;
+            color: var(--text-color) !important;
+        }
+        
+        .badge.bg-success {
+            background-color: var(--btn-success) !important;
+        }
+        
+        .badge.bg-warning {
+            background-color: var(--btn-warning) !important;
+            color: #000 !important;
+        }
+        
+        .badge.bg-danger {
+            background-color: var(--btn-danger) !important;
+        }
+        
+        .badge.bg-info {
+            background-color: var(--btn-info) !important;
+        }
+        
+        .badge.bg-light {
+            background-color: var(--card-bg) !important;
+            color: var(--text-color) !important;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Alert styling */
+        .alert {
+            border-color: var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .alert-primary {
+            background-color: rgba(88, 166, 255, 0.15);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+        
+        .alert-secondary {
+            background-color: rgba(139, 148, 158, 0.15);
+            border-color: var(--secondary-accent);
+            color: var(--secondary-accent);
+        }
+        
+        .alert-success {
+            background-color: rgba(35, 134, 54, 0.15);
+            border-color: var(--btn-success);
+            color: var(--btn-success);
+        }
+        
+        .alert-warning {
+            background-color: rgba(210, 153, 34, 0.15);
+            border-color: var(--btn-warning);
+            color: var(--btn-warning);
+        }
+        
+        .alert-danger {
+            background-color: rgba(218, 54, 51, 0.15);
+            border-color: var(--btn-danger);
+            color: var(--btn-danger);
+        }
+        
+        .alert-info {
+            background-color: rgba(9, 105, 218, 0.15);
+            border-color: var(--btn-info);
+            color: var(--btn-info);
+        }
+        
+        /* Table styling improvements */
+        .table-striped > tbody > tr:nth-of-type(odd) > td {
+            background-color: rgba(var(--table-hover), 0.5);
+        }
+        
+        .table-light > :not(caption) > * > * {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .table-secondary {
+            background-color: rgba(139, 148, 158, 0.2);
+        }        /* Footer */
+        .footer {
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        
+        /* Input group styling */
+        .input-group-text {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            color: var(--text-color);
+        }
+        
+        /* Dropdown styling */
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+        
+        .dropdown-item {
+            color: var(--text-color);
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--table-hover);
+            color: var(--text-color);
+        }
+        
+        /* Modal styling */
+        .modal-content {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+        
+        .modal-header {
+            border-bottom-color: var(--border-color);
+        }
+        
+        .modal-footer {
+            border-top-color: var(--border-color);
+        }
+        
+        /* Tooltip styling */
+        .tooltip-inner {
+            background-color: var(--accent-color);
+            color: #fff;
+        }
+        
+        /* Popover styling */
+        .popover {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+        
+        .popover-header {
+            background-color: var(--table-hover);
+            border-bottom-color: var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .popover-body {
+            color: var(--text-color);
+        }
+        
+        /* Dark mode specific adjustments */
+        [data-bs-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        [data-bs-theme="dark"] .table-light {
+            background-color: var(--table-hover);
+            color: var(--text-color);
+        }
+        
+        [data-bs-theme="dark"] .table-secondary {
+            background-color: rgba(108, 117, 125, 0.2);
+        }
+        
+        [data-bs-theme="dark"] .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        [data-bs-theme="dark"] .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        
+        [data-bs-theme="dark"] .form-check-input:checked {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        
+        [data-bs-theme="dark"] .form-switch .form-check-input:checked {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        
+        [data-bs-theme="dark"] .text-muted {
+            color: var(--secondary-accent) !important;
+        }
+          /* Close button styling */
+        .btn-close {
+            filter: var(--bs-btn-close-white-filter, none);
+        }
+        
+        [data-bs-theme="dark"] .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+        
+        /* Text selection styling */
+        ::selection {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        /* Scrollbar styling for dark mode */
+        [data-bs-theme="dark"] ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        [data-bs-theme="dark"] ::-webkit-scrollbar-track {
+            background: var(--card-bg);
+        }
+        
+        [data-bs-theme="dark"] ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        [data-bs-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-accent);
+        }
+        
+        /* Focus indicators for accessibility */
+        .form-control:focus,
+        .form-select:focus,
+        .btn:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+          /* Enhanced navbar active state */
+        .navbar-custom .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            font-weight: 600;
+        }
+          /* Smooth transitions for theme switching */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .table, .table th, .table td, .card, .form-control, .form-select, .btn {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* Page transition animations */
+        .page-transition-wrapper {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        
+        .page-transition-wrapper.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .page-fade-out {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        /* Loading overlay */
+        .page-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .page-loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Navigation link hover effects */
+        .navbar-nav .nav-link {
+            position: relative;
+            overflow: hidden;
+            transition: color 0.3s ease;
+        }
+        
+        .navbar-nav .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background-color: var(--accent-color);
+            transition: left 0.3s ease;
+        }
+        
+        .navbar-nav .nav-link:hover::before,
+        .navbar-nav .nav-link.active::before {
+            left: 0;
+        }
+          /* Staggered animation for elements */
+        .stagger-animation {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: staggerIn 0.6s ease forwards;
+        }
+        
+        .stagger-animation:nth-child(1) { animation-delay: 0.1s; }
+        .stagger-animation:nth-child(2) { animation-delay: 0.2s; }
+        .stagger-animation:nth-child(3) { animation-delay: 0.3s; }
+        .stagger-animation:nth-child(4) { animation-delay: 0.4s; }
+        .stagger-animation:nth-child(5) { animation-delay: 0.5s; }
+        .stagger-animation:nth-child(6) { animation-delay: 0.6s; }
+        
+        @keyframes staggerIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Form submission loading effect */
+        .form-loading {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .form-loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(var(--accent-color), 0.2), transparent);
+            animation: formShimmer 1.5s infinite;
+        }
+        
+        @keyframes formShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <!-- Page Loading Overlay -->
+    <div class="page-loading-overlay" id="pageLoadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'index' %}">Student Management System</a>
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <i class="bi bi-mortarboard-fill me-2"></i>Student Management System
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -61,44 +736,235 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'index' %}">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'index' %}" data-page-link>
                             <i class="bi bi-house"></i> Home
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if '/students/' in request.path %}active{% endif %}" href="{% url 'student_list' %}">
+                        <a class="nav-link {% if '/students/' in request.path %}active{% endif %}" href="{% url 'student_list' %}" data-page-link>
                             <i class="bi bi-people"></i> Students
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if '/courses/' in request.path %}active{% endif %}" href="{% url 'course_list' %}">
+                        <a class="nav-link {% if '/courses/' in request.path %}active{% endif %}" href="{% url 'course_list' %}" data-page-link>
                             <i class="bi bi-book"></i> Courses
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if '/reports/' in request.path %}active{% endif %}" href="{% url 'reports' %}">
+                        <a class="nav-link {% if '/reports/' in request.path %}active{% endif %}" href="{% url 'reports' %}" data-page-link>
                             <i class="bi bi-bar-chart"></i> Reports
                         </a>
                     </li>
                 </ul>
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch" for="theme-toggle">
+                        <input type="checkbox" id="theme-toggle" />
+                        <span class="slider"></span>
+                    </label>
+                    <div class="theme-icon">
+                        <i class="bi bi-moon-stars" id="dark-icon"></i>
+                        <i class="bi bi-sun" id="light-icon" style="display: none;"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-4">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
+    <!-- Page Content Wrapper for Transitions -->
+    <div class="page-transition-wrapper" id="pageContent">
+        <div class="container mt-4">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>    
+        {% block content %}{% endblock %}
     </div>
-    
-    {% block content %}{% endblock %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <footer class="footer mt-5 py-3">
+        <div class="container text-center">
+            <span>© {% now "Y" %} Student Management System</span>
+        </div>
+    </footer>    <script>
+        // Page transition functionality
+        class PageTransition {
+            constructor() {
+                this.pageContent = document.getElementById('pageContent');
+                this.loadingOverlay = document.getElementById('pageLoadingOverlay');
+                this.init();
+            }
+            
+            init() {
+                // Initialize page load animation
+                this.showPage();
+                
+                // Add click listeners to navigation links
+                this.setupPageLinks();
+                
+                // Add stagger animation to cards and elements
+                this.addStaggerAnimation();
+            }
+            
+            showPage() {
+                setTimeout(() => {
+                    this.pageContent.classList.add('loaded');
+                }, 100);
+            }
+            
+            setupPageLinks() {
+                const pageLinks = document.querySelectorAll('a[data-page-link]');
+                pageLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.navigateToPage(link.href);
+                    });
+                });
+                  // Also handle form submissions
+                const forms = document.querySelectorAll('form');
+                forms.forEach(form => {
+                    form.addEventListener('submit', (e) => {
+                        if (!form.hasAttribute('data-no-transition')) {
+                            this.showLoadingOverlay();
+                        } else {
+                            // Add loading effect to form
+                            form.classList.add('form-loading');
+                            const submitBtn = form.querySelector('button[type="submit"]');
+                            if (submitBtn) {
+                                submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Processing...';
+                                submitBtn.disabled = true;
+                            }
+                        }
+                    });
+                });
+            }
+            
+            navigateToPage(url) {
+                // Show loading overlay
+                this.showLoadingOverlay();
+                
+                // Hide current page content
+                this.pageContent.classList.add('page-fade-out');
+                
+                // Navigate after animation
+                setTimeout(() => {
+                    window.location.href = url;
+                }, 300);
+            }
+            
+            showLoadingOverlay() {
+                this.loadingOverlay.classList.add('active');
+            }
+            
+            hideLoadingOverlay() {
+                this.loadingOverlay.classList.remove('active');
+            }
+            
+            addStaggerAnimation() {
+                // Add stagger animation to cards
+                const cards = document.querySelectorAll('.card, .alert, .table');
+                cards.forEach((card, index) => {
+                    card.classList.add('stagger-animation');
+                    card.style.animationDelay = `${index * 0.1 + 0.2}s`;
+                });
+            }
+        }
+        
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+        const darkIcon = document.getElementById('dark-icon');
+        const lightIcon = document.getElementById('light-icon');
+        
+        // Check for saved theme preference or use preferred color scheme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            htmlElement.setAttribute('data-bs-theme', savedTheme);
+            themeToggle.checked = savedTheme === 'dark';
+            updateIcons(savedTheme === 'dark');
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            htmlElement.setAttribute('data-bs-theme', 'dark');
+            themeToggle.checked = true;
+            updateIcons(true);
+        }
+        
+        // Update icons based on current theme
+        function updateIcons(isDark) {
+            if (isDark) {
+                darkIcon.style.display = 'none';
+                lightIcon.style.display = 'inline';
+            } else {
+                darkIcon.style.display = 'inline';
+                lightIcon.style.display = 'none';
+            }
+        }
+        
+        // Theme switch event listener
+        themeToggle.addEventListener('change', function() {
+            const newTheme = this.checked ? 'dark' : 'light';
+            
+            // Add transition effect
+            document.body.style.transition = 'all 0.3s ease';
+            
+            htmlElement.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateIcons(this.checked);
+            
+            // Remove transition after change
+            setTimeout(() => {
+                document.body.style.transition = '';
+            }, 300);
+        });
+
+        // Initialize page transitions and other functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize page transitions
+            new PageTransition();
+            
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Add smooth scrolling to anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+        
+        // Hide loading overlay when page is fully loaded
+        window.addEventListener('load', function() {
+            const loadingOverlay = document.getElementById('pageLoadingOverlay');
+            if (loadingOverlay) {
+                setTimeout(() => {
+                    loadingOverlay.classList.remove('active');
+                }, 200);
+            }
+        });
+        
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function(e) {
+            const pageContent = document.getElementById('pageContent');
+            pageContent.classList.remove('loaded');
+            setTimeout(() => {
+                pageContent.classList.add('loaded');
+            }, 100);
+        });
+    </script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

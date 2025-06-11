@@ -1,39 +1,174 @@
 {% extends "base.html" %}
 {% block title %}{{ title }}{% endblock %}
 
-{% block content %}
-<div class="container mt-5">
-    <h2>{{ title }}</h2>
-    <p>Upload a CSV file to import data. Make sure the CSV has the correct format.</p>    {% if title == 'Import Students' %}
-        <div class="alert alert-info">
-            <h5>Expected CSV format:</h5>
-            <p><strong>Headers:</strong> id_number, first_name, last_name, email, age, gender, year_section, courses</p>
-            <p><strong>Example:</strong> 2023-12345,John,Doe,john@example.com,21,Male,1-A,CS101;MATH202</p>
-            <p><small>Note: The "courses" column is optional and should contain course codes separated by semicolons (;)</small></p>
-        </div>
-    {% else %}
-        <div class="alert alert-info">
-            <h5>Expected CSV format:</h5>
-            <p><strong>Headers:</strong> code, name, description, credits, is_active</p>
-            <p><strong>Example:</strong> CS101,Introduction to Computer Science,A beginner course for CS,3,Yes</p>
-            <p><small>Notes:</small></p>
-            <ul class="mb-0">
-                <li><small>The "credits" column is optional and should be a number (defaults to 3 if missing or invalid)</small></li>
-                <li><small>The "is_active" column is optional and should be "Yes" or "No" (defaults to "Yes" if missing)</small></li>
-            </ul>
-        </div>
-    {% endif %}
+{% block extra_head %}
+<style>
+    .import-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: var(--card-bg);
+    }
+      .import-header {
+        background: linear-gradient(135deg, var(--btn-secondary) 0%, #495057 100%);
+        border-radius: 8px 8px 0 0;
+        padding: 1.5rem;
+    }
     
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Upload CSV</button>
-        
-        {% if title == 'Import Students' %}
-            <a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
-        {% else %}
-            <a href="{% url 'course_list' %}" class="btn btn-secondary">Cancel</a>
-        {% endif %}
-    </form>
+    .import-title {
+        margin-bottom: 0;
+        font-weight: 700;
+        color: white;
+    }
+    
+    .import-container {
+        padding: 2rem;
+    }
+    
+    .csv-format {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 25px;
+        border-left: 5px solid var(--accent-color);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .csv-format h5 {
+        color: var(--accent-color);
+        margin-bottom: 15px;
+    }
+    
+    .csv-example {
+        background-color: var(--table-hover);
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-family: 'Courier New', monospace;
+        overflow-x: auto;
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+    }
+    
+    .upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: 8px;
+        padding: 30px;
+        text-align: center;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+        background-color: var(--card-bg);
+    }
+    
+    .upload-area:hover {
+        border-color: var(--accent-color);
+        background-color: var(--table-hover);
+    }
+    
+    .import-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: center;
+    }
+    
+    .import-btn {
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+    }
+      .upload-icon {
+        color: var(--accent-color);
+        margin-bottom: 15px;
+    }
+    
+    /* File input styling */
+    .form-control[type="file"] {
+        background-color: var(--card-bg);
+        border-color: var(--border-color);
+        color: var(--text-color);
+    }
+    
+    .form-control[type="file"]:focus {
+        background-color: var(--card-bg);
+        border-color: var(--accent-color);
+        color: var(--text-color);
+        box-shadow: 0 0 0 0.25rem rgba(88, 166, 255, 0.25);
+    }
+    
+    /* Form text styling */
+    .form-text {
+        color: var(--secondary-accent);
+    }
+</style>
+{% endblock %}
+  {% block content %}
+<div class="container mt-5">
+    <div class="card shadow import-card">
+        <div class="card-header import-header">
+            <h2 class="import-title">
+                <i class="bi bi-cloud-upload-fill me-2"></i>{{ title }}
+            </h2>
+        </div>
+        <div class="card-body import-container">
+            <p class="lead mb-4">Upload a CSV file to import data. Make sure the CSV has the correct format.</p>
+            
+            {% if title == 'Import Students' %}
+                <div class="csv-format">
+                    <h5><i class="bi bi-file-earmark-text me-2"></i>Expected CSV Format</h5>
+                    <p><strong>Headers:</strong> id_number, first_name, last_name, email, age, gender, year_section, courses</p>
+                    <div class="csv-example mb-3">
+2023-12345,John,Doe,john@example.com,21,Male,1-A,CS101;MATH202
+                    </div>
+                    <p><small><i class="bi bi-info-circle me-1"></i> The "courses" column is optional and should contain course codes separated by semicolons (;)</small></p>
+                </div>
+            {% else %}
+                <div class="csv-format">
+                    <h5><i class="bi bi-file-earmark-text me-2"></i>Expected CSV Format</h5>
+                    <p><strong>Headers:</strong> code, name, description, credits, is_active</p>
+                    <div class="csv-example mb-3">
+CS101,Introduction to Computer Science,A beginner course for CS,3,Yes
+                    </div>
+                    <p><small><i class="bi bi-info-circle me-1"></i> Notes:</small></p>
+                    <ul class="mb-0">
+                        <li><small>The "credits" column is optional and should be a number (defaults to 3 if missing or invalid)</small></li>
+                        <li><small>The "is_active" column is optional and should be "Yes" or "No" (defaults to "Yes" if missing)</small></li>
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div class="upload-area">
+                <div class="upload-icon">
+                    <i class="bi bi-upload display-4"></i>
+                </div>
+                <h5>Upload CSV File</h5>
+                <p class="text-muted mb-3">Select a CSV file to upload</p>
+                
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ form.csv_file }}
+                        {% if form.csv_file.help_text %}
+                        <div class="form-text">{{ form.csv_file.help_text }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="import-actions">
+                        <button type="submit" class="btn btn-primary import-btn">
+                            <i class="bi bi-file-earmark-arrow-up me-2"></i>Upload CSV
+                        </button>
+                        
+                        {% if title == 'Import Students' %}
+                            <a href="{% url 'student_list' %}" class="btn btn-secondary import-btn">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                        {% else %}
+                            <a href="{% url 'course_list' %}" class="btn btn-secondary import-btn">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

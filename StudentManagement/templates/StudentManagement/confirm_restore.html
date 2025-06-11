@@ -1,43 +1,96 @@
 {% extends "base.html" %}
 {% block title %}Restore Item{% endblock %}
 
+{% block extra_head %}
+<style>
+    .confirm-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: var(--card-bg);
+    }
+    
+    .confirm-header {
+        background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+        border-radius: 8px 8px 0 0;
+        padding: 1.5rem;
+    }
+    
+    .confirm-title {
+        margin-bottom: 0;
+        font-weight: 700;
+        color: white;
+    }
+    
+    .confirm-container {
+        padding: 2rem;
+    }
+    
+    .confirm-actions {
+        margin-top: 2rem;
+        display: flex;
+        gap: 10px;
+    }
+    
+    .confirm-btn {
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+    }
+    
+    .alert-custom {
+        border: none;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
-    <div class="card">
-        <div class="card-header bg-success text-white">
-            <h2>Confirm Restore</h2>
+    <div class="card shadow confirm-card">
+        <div class="card-header confirm-header">
+            <h2 class="confirm-title">
+                <i class="bi bi-arrow-counterclockwise me-2"></i>Confirm Restore
+            </h2>
         </div>
-        <div class="card-body">
+        <div class="card-body confirm-container">
             <p class="lead">
                 Are you sure you want to restore the following archived {{ type }}?
             </p>
 
-            <div class="alert alert-info">
+            <div class="alert alert-info alert-custom shadow-sm">
                 {% if type == 'student' %}
-                    <strong>Student:</strong> {{ object.first_name }} {{ object.last_name }} ({{ object.id_number }})
+                    <strong><i class="bi bi-person me-2"></i>Student:</strong> {{ object.first_name }} {{ object.last_name }} ({{ object.id_number }})
                 {% elif type == 'course' %}
-                    <strong>Course:</strong> {{ object.code }} - {{ object.name }}
+                    <strong><i class="bi bi-book me-2"></i>Course:</strong> {{ object.code }} - {{ object.name }}
                 {% endif %}
             </div>
 
-            <div class="alert alert-success">
-                <i class="bi bi-info-circle"></i> 
+            <div class="alert alert-success alert-custom shadow-sm">
+                <i class="bi bi-info-circle-fill me-2"></i> 
                 <strong>Note:</strong> Restoring this item will make it visible in regular list views again.
             </div>
 
-            <div class="mt-4">
-                <form method="post">
+            <div class="confirm-actions">
+                <form method="post" class="d-inline">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-arrow-counterclockwise"></i> Confirm Restore
+                    <button type="submit" class="btn btn-success confirm-btn">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Confirm Restore
                     </button>
-                    {% if type == 'student' %}
-                        <a href="{% url 'student_list' %}?show_archived=true" class="btn btn-secondary">Cancel</a>
-                    {% elif type == 'course' %}
-                        <a href="{% url 'course_list' %}?show_archived=true" class="btn btn-secondary">Cancel</a>
-                    {% endif %}
                 </form>
+                {% if type == 'student' %}
+                    <a href="{% url 'student_list' %}?show_archived=true" class="btn btn-secondary confirm-btn">
+                        <i class="bi bi-x-circle me-1"></i> Cancel
+                    </a>
+                {% elif type == 'course' %}
+                    <a href="{% url 'course_list' %}?show_archived=true" class="btn btn-secondary confirm-btn">
+                        <i class="bi bi-x-circle me-1"></i> Cancel
+                    </a>
+                {% endif %}
             </div>
+        </div>
+        <div class="card-footer text-muted">
+            <small><i class="bi bi-info-circle me-1"></i> This item will be visible in regular views after restoration.</small>
         </div>
     </div>
 </div>

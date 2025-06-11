@@ -1,44 +1,97 @@
 {% extends "base.html" %}
 {% block title %}Confirm Archive{% endblock %}
 
+{% block extra_head %}
+<style>
+    .confirm-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: var(--card-bg);
+    }
+    
+    .confirm-header {
+        background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+        border-radius: 8px 8px 0 0;
+        padding: 1.5rem;
+    }
+    
+    .confirm-title {
+        margin-bottom: 0;
+        font-weight: 700;
+        color: #000;
+    }
+    
+    .confirm-container {
+        padding: 2rem;
+    }
+    
+    .confirm-actions {
+        margin-top: 2rem;
+        display: flex;
+        gap: 10px;
+    }
+    
+    .confirm-btn {
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+    }
+    
+    .alert-custom {
+        border: none;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
-    <div class="card">
-        <div class="card-header bg-warning text-dark">
-            <h2>Confirm Archive</h2>
+    <div class="card shadow confirm-card">
+        <div class="card-header confirm-header">
+            <h2 class="confirm-title">
+                <i class="bi bi-archive me-2"></i>Confirm Archive
+            </h2>
         </div>
-        <div class="card-body">
+        <div class="card-body confirm-container">
             <p class="lead">
                 Are you sure you want to archive the following {{ type }}?
             </p>
 
-            <div class="alert alert-info">
+            <div class="alert alert-info alert-custom shadow-sm">
                 {% if type == 'student' %}
-                    <strong>Student:</strong> {{ object.first_name }} {{ object.last_name }} ({{ object.id_number }})
+                    <strong><i class="bi bi-person me-2"></i>Student:</strong> {{ object.first_name }} {{ object.last_name }} ({{ object.id_number }})
                 {% elif type == 'course' %}
-                    <strong>Course:</strong> {{ object.code }} - {{ object.name }}
+                    <strong><i class="bi bi-book me-2"></i>Course:</strong> {{ object.code }} - {{ object.name }}
                 {% endif %}
             </div>
 
-            <div class="alert alert-warning">
-                <i class="bi bi-exclamation-triangle"></i> 
+            <div class="alert alert-warning alert-custom shadow-sm">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
                 <strong>Note:</strong> Archived items are hidden from regular views but can be restored later.
                 They remain in the database and existing relationships are preserved.
             </div>
 
-            <div class="mt-4">
-                <form method="post">
+            <div class="confirm-actions">
+                <form method="post" class="d-inline">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-warning">
-                        <i class="bi bi-archive"></i> Confirm Archive
+                    <button type="submit" class="btn btn-warning confirm-btn">
+                        <i class="bi bi-archive-fill me-1"></i> Confirm Archive
                     </button>
-                    {% if type == 'student' %}
-                        <a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
-                    {% elif type == 'course' %}
-                        <a href="{% url 'course_list' %}" class="btn btn-secondary">Cancel</a>
-                    {% endif %}
                 </form>
+                {% if type == 'student' %}
+                    <a href="{% url 'student_list' %}" class="btn btn-secondary confirm-btn">
+                        <i class="bi bi-x-circle me-1"></i> Cancel
+                    </a>
+                {% elif type == 'course' %}
+                    <a href="{% url 'course_list' %}" class="btn btn-secondary confirm-btn">
+                        <i class="bi bi-x-circle me-1"></i> Cancel
+                    </a>
+                {% endif %}
             </div>
+        </div>
+        <div class="card-footer text-muted">
+            <small><i class="bi bi-info-circle me-1"></i> This action can be undone later from the archive view.</small>
         </div>
     </div>
 </div>

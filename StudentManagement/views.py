@@ -12,7 +12,29 @@ from .models import Student, Course
 from .forms import StudentForm, CourseForm, CSVUploadForm
 
 def index(request):
-    return render(request, 'StudentManagement/index.html')
+    # Calculate statistics for the homepage
+    total_students = Student.objects.count()
+    total_courses = Course.objects.count()
+    active_students = Student.objects.filter(is_archived=False).count()
+    active_courses = Course.objects.filter(is_archived=False).count()
+    
+    # Calculate enrollment rate (students with at least one course)
+    enrolled_students = Student.objects.filter(courses__isnull=False, is_archived=False).distinct().count()
+    enrollment_rate = round((enrolled_students / active_students * 100) if active_students > 0 else 0, 1)
+    
+    # Get latest activity (most recent student added)
+    latest_student = Student.objects.filter(is_archived=False).order_by('-created_at').first()
+    latest_activity = f"Student {latest_student.first_name} {latest_student.last_name} added" if latest_student else "No recent activity"
+    
+    context = {
+        'total_students': total_students,
+        'total_courses': active_courses,
+        'active_students': active_students,
+        'enrollment_rate': enrollment_rate,
+        'latest_activity': latest_activity,
+    }
+    
+    return render(request, 'StudentManagement/index.html', context)
 
 # Student Views
 
@@ -117,7 +139,7 @@ def import_students(request):
                                 year_section=year_section
                             )
                             student.save()
-                            if len(row) > 7:  # Adjust for year_section
+                            if len(row) > 7: 
                                 codes = [c.strip() for c in row[7].split(';') if c.strip()]
                                 for code in codes:
                                     try:
