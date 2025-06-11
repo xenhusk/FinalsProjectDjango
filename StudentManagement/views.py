@@ -96,7 +96,8 @@ def import_students(request):
             header = next(reader, None)
             count = 0
             for row in reader:
-                # Check for the minimum required columns                if len(row) >= 7:  # id_number, first_name, last_name, email, age, gender, year_section are minimum required
+                # Check for the minimum required columns
+                # if len(row) >= 7:  # id_number, first_name, last_name, email, age, gender, year_section are minimum required
                     id_number = row[0].strip()
                     email = row[3].strip()
                     
@@ -115,7 +116,7 @@ def import_students(request):
                                 gender=gender,
                                 year_section=year_section
                             )
-                            student.save()                            # Assign courses if codes provided
+                            student.save()
                             if len(row) > 7:  # Adjust for year_section
                                 codes = [c.strip() for c in row[7].split(';') if c.strip()]
                                 for code in codes:
