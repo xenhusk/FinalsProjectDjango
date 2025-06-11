@@ -1,0 +1,11 @@
+id_number,first_name,last_name,email,age,gender,year_section,courses
+2023-00001,John,Doe,john.doe@example.com,20,Male,1-A,CS101;MATH102
+2023-00002,Jane,Smith,jane.smith@example.com,21,Female,2-B,CS101;ENG103
+2023-00003,Michael,Johnson,michael.johnson@example.com,22,Male,3-A,MATH102;PHYS101
+2023-00004,Emily,Williams,emily.williams@example.com,20,Female,1-B,CS101;MATH102;ENG103
+2023-00005,David,Brown,david.brown@example.com,23,Male,4-A,PHYS101;CHEM101
+2023-00006,Sarah,Miller,sarah.miller@example.com,21,Female,2-C,CHEM101;BIO101
+2023-00007,Robert,Wilson,robert.wilson@example.com,22,Male,3-B,ENG103;HIST101
+2023-00008,Jennifer,Taylor,jennifer.taylor@example.com,20,Female,1-A,HIST101;BIO101
+2023-00009,William,Anderson,william.anderson@example.com,24,Male,4-B,CS101;PHYS101
+2023-00010,Elizabeth,Thomas,elizabeth.thomas@example.com,21,Female,2-A,MATH102;CHEM101

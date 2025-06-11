@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Confirm Archive{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-warning text-dark">
+            <h2>Confirm Archive</h2>
+        </div>
+        <div class="card-body">
+            <p class="lead">
+                Are you sure you want to archive the following {{ type }}?
+            </p>
+
+            <div class="alert alert-info">
+                {% if type == 'student' %}
+                    <strong>Student:</strong> {{ object.first_name }} {{ object.last_name }} ({{ object.id_number }})
+                {% elif type == 'course' %}
+                    <strong>Course:</strong> {{ object.code }} - {{ object.name }}
+                {% endif %}
+            </div>
+
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i> 
+                <strong>Note:</strong> Archived items are hidden from regular views but can be restored later.
+                They remain in the database and existing relationships are preserved.
+            </div>
+
+            <div class="mt-4">
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-archive"></i> Confirm Archive
+                    </button>
+                    {% if type == 'student' %}
+                        <a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
+                    {% elif type == 'course' %}
+                        <a href="{% url 'course_list' %}" class="btn btn-secondary">Cancel</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

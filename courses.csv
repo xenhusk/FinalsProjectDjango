@@ -1,0 +1,11 @@
+code,name,description,credits,is_active
+CS101,Introduction to Computer Science,Fundamentals of computer science including programming basics,3,Yes
+MATH102,Calculus I,Limits, derivatives, and integrals of algebraic and trigonometric functions,4,Yes
+ENG103,Academic Writing,Introduction to academic writing and research skills,3,Yes
+PHYS101,General Physics I,Introduction to mechanics, thermodynamics, and waves,4,Yes
+CHEM101,General Chemistry,Basic principles of chemistry including atomic structure and bonding,4,Yes
+BIO101,Introduction to Biology,Study of basic biological concepts and principles,3,Yes
+HIST101,World History,Survey of world history from ancient civilizations to modern times,3,Yes
+CS201,Data Structures and Algorithms,Advanced programming concepts including algorithms and data structures,4,Yes
+MATH201,Linear Algebra,Study of vector spaces, linear transformations, and matrices,3,Yes
+ECON101,Principles of Economics,Introduction to microeconomic and macroeconomic concepts,3,Yes

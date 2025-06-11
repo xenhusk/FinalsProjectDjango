@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>{{ title }}</h2>
+    <p>Upload a CSV file to import data. Make sure the CSV has the correct format.</p>    {% if title == 'Import Students' %}
+        <div class="alert alert-info">
+            <h5>Expected CSV format:</h5>
+            <p><strong>Headers:</strong> id_number, first_name, last_name, email, age, gender, year_section, courses</p>
+            <p><strong>Example:</strong> 2023-12345,John,Doe,john@example.com,21,Male,1-A,CS101;MATH202</p>
+            <p><small>Note: The "courses" column is optional and should contain course codes separated by semicolons (;)</small></p>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <h5>Expected CSV format:</h5>
+            <p><strong>Headers:</strong> code, name, description, credits, is_active</p>
+            <p><strong>Example:</strong> CS101,Introduction to Computer Science,A beginner course for CS,3,Yes</p>
+            <p><small>Notes:</small></p>
+            <ul class="mb-0">
+                <li><small>The "credits" column is optional and should be a number (defaults to 3 if missing or invalid)</small></li>
+                <li><small>The "is_active" column is optional and should be "Yes" or "No" (defaults to "Yes" if missing)</small></li>
+            </ul>
+        </div>
+    {% endif %}
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Upload CSV</button>
+        
+        {% if title == 'Import Students' %}
+            <a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
+        {% else %}
+            <a href="{% url 'course_list' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

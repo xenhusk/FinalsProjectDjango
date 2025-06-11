@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Restore Item{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h2>Confirm Restore</h2>
+        </div>
+        <div class="card-body">
+            <p class="lead">
+                Are you sure you want to restore the following archived {{ type }}?
+            </p>
+
+            <div class="alert alert-info">
+                {% if type == 'student' %}
+                    <strong>Student:</strong> {{ object.first_name }} {{ object.last_name }} ({{ object.id_number }})
+                {% elif type == 'course' %}
+                    <strong>Course:</strong> {{ object.code }} - {{ object.name }}
+                {% endif %}
+            </div>
+
+            <div class="alert alert-success">
+                <i class="bi bi-info-circle"></i> 
+                <strong>Note:</strong> Restoring this item will make it visible in regular list views again.
+            </div>
+
+            <div class="mt-4">
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-arrow-counterclockwise"></i> Confirm Restore
+                    </button>
+                    {% if type == 'student' %}
+                        <a href="{% url 'student_list' %}?show_archived=true" class="btn btn-secondary">Cancel</a>
+                    {% elif type == 'course' %}
+                        <a href="{% url 'course_list' %}?show_archived=true" class="btn btn-secondary">Cancel</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

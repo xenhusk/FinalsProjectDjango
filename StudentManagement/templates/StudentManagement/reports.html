@@ -1,0 +1,336 @@
+{% extends "base.html" %}
+{% block title %}Reports & Statistics{% endblock %}
+
+{% block extra_head %}
+<style>
+    .stats-card {
+        transition: transform 0.3s ease;
+    }
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+    .stats-icon {
+        font-size: 2.5rem;
+        opacity: 0.7;
+    }
+    .chart-container {
+        position: relative;
+        height: 300px;
+    }
+    .recent-activity {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2><i class="bi bi-graph-up"></i> Reports & Statistics</h2>
+            <form method="get" class="d-flex align-items-center">
+                <div class="form-check form-switch text-light me-2">
+                    <input class="form-check-input" type="checkbox" name="include_archived" id="includeArchived" value="true" onChange="this.form.submit()" {% if include_archived %}checked{% endif %}>
+                    <label class="form-check-label" for="includeArchived">Include Archived Items</label>
+                </div>
+            </form>
+        </div>
+        <div class="card-body">
+            <!-- Summary Cards -->            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card stats-card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <h5 class="card-title mb-0">Students</h5>
+                                </div>
+                                <div class="stats-icon">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                            </div>
+                            <h2 class="display-4">{{ archive_stats.students.active }}</h2>
+                            <div class="d-flex justify-content-between mt-3">
+                                <div>
+                                    <small>Active</small>
+                                    <h5 class="mb-0">{{ archive_stats.students.active }}</h5>
+                                </div>
+                                <div>
+                                    <small>Archived</small>
+                                    <h5 class="mb-0">{{ archive_stats.students.archived }}</h5>
+                                </div>
+                                <div>
+                                    <small>Total</small>
+                                    <h5 class="mb-0">{{ archive_stats.students.total }}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card stats-card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <h5 class="card-title mb-0">Courses</h5>
+                                </div>
+                                <div class="stats-icon">
+                                    <i class="bi bi-book"></i>
+                                </div>
+                            </div>
+                            <h2 class="display-4">{{ archive_stats.courses.active }}</h2>
+                            <div class="d-flex justify-content-between mt-3">
+                                <div>
+                                    <small>Active</small>
+                                    <h5 class="mb-0">{{ archive_stats.courses.active }}</h5>
+                                </div>
+                                <div>
+                                    <small>Archived</small>
+                                    <h5 class="mb-0">{{ archive_stats.courses.archived }}</h5>
+                                </div>
+                                <div>
+                                    <small>Total</small>
+                                    <h5 class="mb-0">{{ archive_stats.courses.total }}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Row -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Gender Distribution</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="genderChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Year/Section Distribution</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="yearSectionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Course Enrollment</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="courseEnrollmentChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Students by Number of Courses</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="studentsByCoursesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Recent Activity</h5>
+                        </div>
+                        <div class="card-body recent-activity">
+                            <h6 class="text-muted mb-3">Recently Added Students</h6>
+                            <ul class="list-group mb-4">
+                                {% for student in recent_students %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="bi bi-person text-primary me-2"></i>
+                                        {{ student.first_name }} {{ student.last_name }}
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill" title="{{ student.created_at }}">
+                                        {{ student.created_at|date:"M d, Y" }}
+                                    </span>
+                                </li>
+                                {% empty %}
+                                <li class="list-group-item text-center">No recent students</li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <h6 class="text-muted mb-3">Recently Added Courses</h6>
+                            <ul class="list-group">
+                                {% for course in recent_courses %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="bi bi-book text-success me-2"></i>
+                                        {{ course.code }} - {{ course.name }}
+                                    </div>
+                                    <span class="badge bg-success rounded-pill" title="{{ course.created_at }}">
+                                        {{ course.created_at|date:"M d, Y" }}
+                                    </span>
+                                </li>
+                                {% empty %}
+                                <li class="list-group-item text-center">No recent courses</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gender Distribution Chart
+    const genderData = {{ gender_distribution|safe }};
+    const genderLabels = genderData.map(item => item.gender || 'Not Specified');
+    const genderCounts = genderData.map(item => item.count);
+    const genderColors = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'];
+    
+    new Chart(document.getElementById('genderChart'), {
+        type: 'pie',
+        data: {
+            labels: genderLabels,
+            datasets: [{
+                data: genderCounts,
+                backgroundColor: genderColors,
+                hoverBackgroundColor: genderColors,
+                hoverBorderColor: "rgba(234, 236, 244, 1)",
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+    
+    // Year/Section Distribution Chart
+    const yearSectionData = {{ year_section_distribution|safe }};
+    const yearSectionLabels = yearSectionData.map(item => item.year_section || 'Not Specified');
+    const yearSectionCounts = yearSectionData.map(item => item.count);
+    
+    new Chart(document.getElementById('yearSectionChart'), {
+        type: 'bar',
+        data: {
+            labels: yearSectionLabels,
+            datasets: [{
+                label: 'Number of Students',
+                data: yearSectionCounts,
+                backgroundColor: '#4e73df',
+                hoverBackgroundColor: '#2e59d9',
+                borderColor: '#4e73df',
+                hoverBorderColor: '#2e59d9',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+      // Course Enrollment Chart
+    const courseStats = [
+        {% for course in course_stats %}
+            {
+                name: "{{ course.code }} - {{ course.name }}",
+                count: {{ course.student_count }}
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    new Chart(document.getElementById('courseEnrollmentChart'), {
+        type: 'bar',
+        data: {
+            labels: courseStats.map(item => item.name),
+            datasets: [{
+                label: 'Number of Students',
+                data: courseStats.map(item => item.count),
+                backgroundColor: '#1cc88a',
+                hoverBackgroundColor: '#17a673',
+                borderColor: '#1cc88a',
+                hoverBorderColor: '#17a673',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+    
+    // Students by Number of Courses Chart
+    const studentCourseData = {{ student_course_counts|safe }};
+    const courseCounts = studentCourseData.map(item => item.count);
+    const studentCounts = studentCourseData.map(item => item.students);
+    
+    new Chart(document.getElementById('studentsByCoursesChart'), {
+        type: 'bar',
+        data: {
+            labels: courseCounts.map(count => count + (count === 1 ? ' Course' : ' Courses')),
+            datasets: [{
+                label: 'Number of Students',
+                data: studentCounts,
+                backgroundColor: '#36b9cc',
+                hoverBackgroundColor: '#2c9faf',
+                borderColor: '#36b9cc',
+                hoverBorderColor: '#2c9faf',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
